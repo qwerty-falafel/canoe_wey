@@ -17,6 +17,7 @@ function formatDate(date: string) {
 
 export function AdminDashboard() {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -45,14 +46,15 @@ export function AdminDashboard() {
       <main className="admin-login">
         <form onSubmit={async (event) => {
           event.preventDefault(); setLoginError('');
-          const response = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
+          const response = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
           const result = await response.json() as { error?: string };
           if (!response.ok) { setLoginError(result.error || 'Sign in failed.'); return; }
-          setPassword(''); setAuthenticated(true); void loadBookings();
+          setEmail(''); setPassword(''); setAuthenticated(true); void loadBookings();
         }}>
           <div className="wordmark admin-mark"><span>River Wey</span><strong>Canoe</strong></div>
-          <p className="eyebrow">Guide’s log</p><h1>Bookings</h1><p>Enter the admin password to see enquiries.</p>
-          <label><span>Password</span><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoFocus required /></label>
+          <p className="eyebrow">Guide’s log</p><h1>Bookings</h1><p>Sign in to see enquiries and manage the public site.</p>
+          <label><span>Email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" autoFocus required /></label>
+          <label><span>Password</span><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" required /></label>
           <button className="button button-dark" type="submit">Open bookings</button>
           {loginError && <output className="form-error">{loginError}</output>}
         </form>

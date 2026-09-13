@@ -21,14 +21,26 @@ function safeEqual(left: string, right: string) {
   return difference === 0;
 }
 
-export async function passwordIsValid(candidate: string) {
+function configuredAdminEmail() {
+  return (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+}
+
+export async function adminCredentialsAreValid(email: string, candidate: string) {
   const password = process.env.PASSWORD;
-  return Boolean(password && candidate && safeEqual(candidate, password));
+  const adminEmail = configuredAdminEmail();
+  return Boolean(
+    adminEmail && password && candidate &&
+    safeEqual(email.trim().toLowerCase(), adminEmail) &&
+    safeEqual(candidate, password),
+  );
 }
 
 export async function createAdminCookie() {
+  const adminEmail = configuredAdminEmail();
+  if (!adminEmail) throw new Error('Admin email is not configured.');
   const expires = Math.floor(Date.now() / 1000) + SESSION_LENGTH_SECONDS;
-  const payload = `admin.${expires}`;
+  const emailTag = bytesToBase64Url(new TextEncoder().encode(adminEmail));
+  const payload = `admin.${emailTag}.${expires}`;
   const token = `${payload}.${await sign(payload)}`;
   const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
   return `${COOKIE_NAME}=${token}; Path=/; HttpOnly${secure}; SameSite=Strict; Max-Age=${SESSION_LENGTH_SECONDS}`;
@@ -44,10 +56,12 @@ export async function isAdminRequest(request: Request) {
   const token = cookies.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${COOKIE_NAME}=`))?.slice(COOKIE_NAME.length + 1);
   if (!token) return false;
   const parts = token.split('.');
-  if (parts.length !== 3 || parts[0] !== 'admin') return false;
-  const expires = Number(parts[1]);
+  if (parts.length !== 4 || parts[0] !== 'admin') return false;
+  const currentEmailTag = bytesToBase64Url(new TextEncoder().encode(configuredAdminEmail()));
+  if (!safeEqual(parts[1], currentEmailTag)) return false;
+  const expires = Number(parts[2]);
   if (!Number.isSafeInteger(expires) || expires < Date.now() / 1000) return false;
-  return safeEqual(parts[2], await sign(`${parts[0]}.${parts[1]}`));
+  return safeEqual(parts[3], await sign(`${parts[0]}.${parts[1]}.${parts[2]}`));
 }
 
 export function sameOrigin(request: Request) {
