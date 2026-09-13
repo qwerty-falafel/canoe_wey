@@ -1,6 +1,6 @@
 # Canoe Wey
 
-A Vite-powered React app styled with Tailwind CSS.
+A server-rendered React site built with Vinext and Tailwind CSS. Booking enquiries are stored in Supabase and managed through the small, password-protected admin area.
 
 ## Development
 
@@ -15,3 +15,5 @@ npm run dev
 npm run lint
 npm run build
 ```
+
+The public site runs at `thecanoewey.co.uk`; bookings are managed at `/admin`.

@@ -1,25 +1,38 @@
 {
   "name": "canoe-wey",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vinext dev",
+    "build": "vinext build",
+    "start": "vinext start",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "images:build": "node scripts/optimise-images.mjs",
+    "db:migrate": "node --env-file=.env scripts/migrate.mjs"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
+    "@supabase/supabase-js": "^2.116.0",
+    "lucide-react": "^0.544.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "tailwindcss": "^4.3.3"
+    "react-server-dom-webpack": "^19.2.8",
+    "vinext": "^1.0.0-beta.9"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.19.19",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
+    "@vitejs/plugin-rsc": "^0.5.34",
     "oxlint": "^1.81.0",
+    "pg": "^8.23.0",
+    "sharp": "^0.34.4",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
     "vite": "^8.3.0"
   }
 }
