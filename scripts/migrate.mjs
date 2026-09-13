@@ -42,6 +42,20 @@ try {
 
     create index if not exists bookings_preferred_date_idx on public.bookings (preferred_date);
     create index if not exists bookings_status_idx on public.bookings (status);
+
+    create table if not exists public.site_access_settings (
+      id smallint primary key default 1 check (id = 1),
+      access_mode text not null default 'public' check (access_mode in ('public', 'password')),
+      username text check (username is null or char_length(username) between 1 and 64),
+      password_hash text,
+      updated_at timestamptz not null default now()
+    );
+
+    alter table public.site_access_settings enable row level security;
+    revoke all on public.site_access_settings from anon, authenticated;
+    insert into public.site_access_settings (id, access_mode)
+      values (1, 'public')
+      on conflict (id) do nothing;
   `);
   console.log('Booking schema is ready.');
 } finally {

@@ -202,6 +202,11 @@ p { color: #4e514c; }
 .admin-header h1 { margin: 20px 0 0; font-size: clamp(3rem, 6vw, 5.5rem); }
 .icon-button { display: inline-grid; width: 44px; height: 44px; place-items: center; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
 .icon-button svg { width: 19px; }
+.admin-section-tabs { display: flex; align-items: center; gap: 8px; padding: 18px max(24px, calc((100vw - 1280px) / 2)); background: white; border-bottom: 1px solid var(--line); }
+.admin-section-tabs button, .admin-section-tabs a { display: inline-flex; min-height: 42px; align-items: center; gap: 8px; padding: 0 15px; color: #5e5c56; background: transparent; border: 1px solid transparent; border-radius: 999px; cursor: pointer; font-size: .82rem; font-weight: 750; }
+.admin-section-tabs button.active { color: white; background: var(--river); }
+.admin-section-tabs a { margin-left: auto; }
+.admin-section-tabs svg { width: 17px; height: 17px; }
 .admin-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 25px; padding: 24px max(24px, calc((100vw - 1280px) / 2)); }
 .admin-filters { display: flex; flex-wrap: wrap; gap: 7px; }
 .admin-filters button { min-height: 38px; padding: 0 14px; color: #5f5d57; background: transparent; border: 1px solid #cbc7bd; border-radius: 999px; cursor: pointer; font-size: .8rem; font-weight: 700; }
@@ -233,6 +238,27 @@ p { color: #4e514c; }
 .admin-update { display: grid; gap: 18px; padding-top: 6px; }
 .admin-update textarea { resize: vertical; }
 .admin-update output { color: var(--river); font-weight: 700; }
+.site-access-panel { width: min(920px, calc(100% - 48px)); margin: 46px auto 90px; }
+.site-access-heading { display: flex; align-items: start; justify-content: space-between; gap: 30px; margin-bottom: 30px; }
+.site-access-heading h2 { margin-bottom: 12px; font-size: clamp(2.8rem, 5vw, 4.6rem); }
+.site-access-heading p:last-child { max-width: 640px; margin-bottom: 0; }
+.access-status { flex: none; padding: 7px 13px; color: #416a4c; background: #e4f0e7; border: 1px solid #b8d0be; border-radius: 999px; font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.access-status.locked { color: #80512f; background: #f4e7da; border-color: #dec1a7; }
+.site-access-form { padding: clamp(24px, 4vw, 42px); background: white; border: 1px solid var(--line); border-radius: 4px 4px 48px 4px; box-shadow: 0 20px 60px rgba(35,31,24,.07); }
+.access-mode-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.access-mode-grid label { position: relative; display: flex; min-height: 190px; align-items: flex-start; flex-direction: column; gap: 11px; padding: 24px; color: #56534d; background: #f8f6f1; border: 1px solid #d8d3c8; border-radius: 4px 4px 28px 4px; cursor: pointer; }
+.access-mode-grid label.selected { background: #eef1ec; border-color: var(--river); box-shadow: inset 0 0 0 1px var(--river); }
+.access-mode-grid input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.access-mode-grid svg { width: 25px; height: 25px; margin-bottom: 18px; color: var(--oak-dark); stroke-width: 1.6; }
+.access-mode-grid strong { color: var(--ink); font-family: var(--serif); font-size: 1.55rem; font-weight: 400; }
+.access-mode-grid span { max-width: 310px; font-size: .88rem; line-height: 1.55; }
+.site-access-credentials { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 26px; }
+.site-access-credentials label { display: grid; gap: 7px; }
+.site-access-credentials label span { color: #4d4b45; font-size: .75rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+.site-access-credentials input { width: 100%; min-height: 48px; padding: 10px 12px; background: white; border: 1px solid #c9c4b8; border-radius: 2px; }
+.access-note { margin: 24px 0 16px; color: #77746d; font-size: .82rem; }
+.access-message, .site-access-form .form-error { display: block; margin-top: 16px; font-size: .88rem; font-weight: 700; }
+.access-message { color: var(--river); }
 
 @media (max-width: 900px) {
   .site-header nav > a:not(.button) { display: none; }
@@ -296,6 +322,8 @@ p { color: #4e514c; }
   .admin-login form { padding: 32px 24px; }
   .admin-header { padding: 25px 16px 18px; }
   .admin-toolbar { align-items: stretch; flex-direction: column; padding: 16px; }
+  .admin-section-tabs { padding: 12px 16px; overflow-x: auto; }
+  .admin-section-tabs button, .admin-section-tabs a { flex: none; }
   .admin-search { min-width: 0; }
   .booking-list { width: calc(100% - 32px); border: 0; background: transparent; }
   .booking-list-head { display: none; }
@@ -306,6 +334,10 @@ p { color: #4e514c; }
   .booking-row > span:last-child { grid-column: 2; grid-row: 1 / 3; }
   .booking-drawer { padding: 70px 20px 40px; }
   .booking-details > div { grid-template-columns: 105px 1fr; }
+  .site-access-panel { width: calc(100% - 32px); margin-top: 32px; }
+  .site-access-heading { flex-direction: column-reverse; gap: 16px; }
+  .access-mode-grid, .site-access-credentials { grid-template-columns: 1fr; }
+  .access-mode-grid label { min-height: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

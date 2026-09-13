@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { CalendarDays, LogOut, Mail, Phone, Search, UsersRound, X } from 'lucide-react';
+import { CalendarDays, ExternalLink, LockKeyhole, LogOut, Mail, Phone, Search, UsersRound, X } from 'lucide-react';
 import type { Booking, BookingStatus } from '@/lib/supabase';
+import { SiteAccessManager } from '@/components/site-access-manager';
 
 const filters = [
   ['upcoming', 'Upcoming'], ['new', 'New enquiries'], ['confirmed', 'Confirmed'], ['past', 'Past'], ['all', 'All'],
@@ -25,6 +26,7 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
+  const [view, setView] = useState<'bookings' | 'access'>('bookings');
 
   const loadBookings = useCallback(async () => {
     setLoading(true);
@@ -60,19 +62,26 @@ export function AdminDashboard() {
 
   return (
     <main className="admin-shell">
-      <header className="admin-header"><div><div className="wordmark admin-mark"><span>River Wey</span><strong>Canoe</strong></div><h1>Bookings</h1></div><button className="icon-button" aria-label="Sign out" onClick={async () => { await fetch('/api/admin/logout', { method: 'POST' }); setAuthenticated(false); }}><LogOut /></button></header>
-      <section className="admin-toolbar">
-        <div className="admin-filters">{filters.map(([value, label]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{label}</button>)}</div>
-        <label className="admin-search"><Search size={18} /><span className="sr-only">Search bookings</span><input placeholder="Name, email or phone" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
-      </section>
-      <section className="booking-list" aria-busy={loading}>
-        <div className="booking-list-head"><span>Date</span><span>Customer</span><span>Group</span><span>Occasion</span><span>Status</span></div>
-        {loading ? <p className="admin-empty">Loading enquiries…</p> : bookings.length === 0 ? <p className="admin-empty">No bookings match this view.</p> : bookings.map((booking) => (
-          <button className="booking-row" key={booking.id} onClick={() => { setSelected(booking); setNotice(''); }}>
-            <span>{formatDate(booking.preferred_date)}</span><strong>{booking.customer_name}</strong><span>{booking.group_size}</span><span>{booking.occasion_type ? occasionNames[booking.occasion_type] : '—'}</span><span><i className={`status-dot status-${booking.status.toLowerCase()}`} />{booking.status.replace('_', ' ')}</span>
-          </button>
-        ))}
-      </section>
+      <header className="admin-header"><div><div className="wordmark admin-mark"><span>River Wey</span><strong>Canoe</strong></div><h1>{view === 'bookings' ? 'Bookings' : 'Site access'}</h1></div><button className="icon-button" aria-label="Sign out" onClick={async () => { await fetch('/api/admin/logout', { method: 'POST' }); setAuthenticated(false); }}><LogOut /></button></header>
+      <nav className="admin-section-tabs" aria-label="Admin sections">
+        <button className={view === 'bookings' ? 'active' : ''} onClick={() => setView('bookings')}><CalendarDays /> Bookings</button>
+        <button className={view === 'access' ? 'active' : ''} onClick={() => setView('access')}><LockKeyhole /> Site access</button>
+        <a href="/" target="_blank" rel="noreferrer">View site <ExternalLink /></a>
+      </nav>
+      {view === 'bookings' ? <>
+        <section className="admin-toolbar">
+          <div className="admin-filters">{filters.map(([value, label]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{label}</button>)}</div>
+          <label className="admin-search"><Search size={18} /><span className="sr-only">Search bookings</span><input placeholder="Name, email or phone" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
+        </section>
+        <section className="booking-list" aria-busy={loading}>
+          <div className="booking-list-head"><span>Date</span><span>Customer</span><span>Group</span><span>Occasion</span><span>Status</span></div>
+          {loading ? <p className="admin-empty">Loading enquiries…</p> : bookings.length === 0 ? <p className="admin-empty">No bookings match this view.</p> : bookings.map((booking) => (
+            <button className="booking-row" key={booking.id} onClick={() => { setSelected(booking); setNotice(''); }}>
+              <span>{formatDate(booking.preferred_date)}</span><strong>{booking.customer_name}</strong><span>{booking.group_size}</span><span>{booking.occasion_type ? occasionNames[booking.occasion_type] : '—'}</span><span><i className={`status-dot status-${booking.status.toLowerCase()}`} />{booking.status.replace('_', ' ')}</span>
+            </button>
+          ))}
+        </section>
+      </> : <SiteAccessManager />}
       {selected && (
         <div className="booking-drawer-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
           <aside className="booking-drawer" aria-label={`Booking for ${selected.customer_name}`}>
